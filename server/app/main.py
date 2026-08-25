@@ -68,6 +68,8 @@ import app.investments.models.fund_nav_history
 import app.investments.models.fund_pipeline_run
 import app.investments.models.fund_pipeline_lock
 import app.investments.models.fund_pipeline_incident
+import app.investments.models.portfolio_snapshot
+
 
 # Create database tables
 Base.metadata.create_all(bind=engine)

@@ -12,3 +12,6 @@ from app.investments.models.fund_pipeline_lock import (
 from app.investments.models.fund_pipeline_incident import (
     FundPipelineIncident,
 )
+from app.investments.models.portfolio_snapshot import (
+    PortfolioSnapshot,
+)
