@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
+    Query,
     status,
 )
 
@@ -25,6 +26,11 @@ from app.investments.schemas.holding import (
 from app.investments.services.portfolio_service import (
     get_portfolio_summary,
 )
+
+from app.investments.services.portfolio_snapshot_service import (
+    get_portfolio_history,
+)
+
 
 
 router = APIRouter(
@@ -283,3 +289,23 @@ def delete_holding(
         "message":
             "Investment removed successfully."
     }
+
+
+# ---------------------------------------------------------
+# Portfolio History
+# ---------------------------------------------------------
+
+@router.get(
+    "/history",
+    status_code=status.HTTP_200_OK,
+)
+def portfolio_history(
+    range: str = Query("1M", description="Time range: 1M, 3M, 6M, 1Y, ALL"),
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    return get_portfolio_history(
+        db=db,
+        user_id=current_user.id,
+        range_param=range,
+    )
