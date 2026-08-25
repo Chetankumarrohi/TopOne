@@ -66,7 +66,7 @@ export default function FinancialTwinPage() {
 
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/financial-twin",
+          "/api-backend/financial-twin",
           {
             headers: {
               Authorization: `Bearer ${token}`,

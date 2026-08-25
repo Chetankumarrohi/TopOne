@@ -60,7 +60,7 @@ export default function GoalsPage() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/goals",
+        "/api-backend/goals",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -99,7 +99,7 @@ export default function GoalsPage() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/goals",
+        "/api-backend/goals",
         {
           method: "POST",
           headers: {
@@ -166,7 +166,7 @@ export default function GoalsPage() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/goals/${goalId}`,
+        `/api-backend/goals/${goalId}`,
         {
           method: "DELETE",
           headers: {

@@ -92,7 +92,7 @@ export default function RiskAssessmentPage() {
         */
 
         const questionsResponse = await fetch(
-          "http://127.0.0.1:8000/risk/questions"
+          "/api-backend/risk/questions"
         );
 
         if (!questionsResponse.ok) {
@@ -115,7 +115,7 @@ export default function RiskAssessmentPage() {
         */
 
         const profileResponse = await fetch(
-          "http://127.0.0.1:8000/risk/profile",
+          "/api-backend/risk/profile",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -253,7 +253,7 @@ export default function RiskAssessmentPage() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/risk/assessment",
+        "/api-backend/risk/assessment",
         {
           method: existingAssessment
             ? "PUT"

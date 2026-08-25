@@ -139,12 +139,12 @@ export default function PortfolioPage() {
         holdingsResponse,
       ] = await Promise.all([
         fetch(
-          "http://127.0.0.1:8000/portfolio/summary",
+          "/api-backend/portfolio/summary",
           { headers }
         ),
 
         fetch(
-          "http://127.0.0.1:8000/portfolio/holdings",
+          "/api-backend/portfolio/holdings",
           { headers }
         ),
       ]);
@@ -214,7 +214,7 @@ export default function PortfolioPage() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/portfolio/holdings",
+        "/api-backend/portfolio/holdings",
         {
           method: "POST",
 
@@ -313,7 +313,7 @@ export default function PortfolioPage() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/portfolio/holdings/${holdingId}`,
+        `/api-backend/portfolio/holdings/${holdingId}`,
         {
           method: "DELETE",
 

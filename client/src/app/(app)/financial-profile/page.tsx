@@ -59,7 +59,7 @@ export default function FinancialProfilePage() {
 
       try {
         const response = await fetch(
-          "http://127.0.0.1:8000/financial-profile",
+          "/api-backend/financial-profile",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -120,7 +120,7 @@ export default function FinancialProfilePage() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/financial-profile",
+        "/api-backend/financial-profile",
         {
           method: existingProfile ? "PUT" : "POST",
 
