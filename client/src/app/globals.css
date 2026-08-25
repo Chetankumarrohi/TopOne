@@ -1,0 +1,252 @@
+@import "tailwindcss";
+
+:root,
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: #05070b;
+  --foreground: #f5f7fa;
+
+  --surface: rgba(255, 255, 255, 0.025);
+  --surface-hover: rgba(255, 255, 255, 0.045);
+  --surface-strong: rgba(255, 255, 255, 0.06);
+
+  --border: rgba(255, 255, 255, 0.075);
+  --border-strong: rgba(255, 255, 255, 0.11);
+
+  --muted: rgba(255, 255, 255, 0.42);
+  --muted-soft: rgba(255, 255, 255, 0.26);
+
+  --accent: #6ee7b7;
+  --accent-strong: #34d399;
+  --accent-soft: rgba(110, 231, 183, 0.09);
+
+  --danger: #fca5a5;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+
+  --background: #f7faf8;
+  --foreground: #102019;
+
+  --surface: rgba(255, 255, 255, 0.88);
+  --surface-hover: rgba(240, 253, 244, 0.96);
+  --surface-strong: #ffffff;
+
+  --border: rgba(20, 83, 45, 0.11);
+  --border-strong: rgba(20, 83, 45, 0.18);
+
+  --muted: rgba(16, 32, 25, 0.58);
+  --muted-soft: rgba(16, 32, 25, 0.36);
+
+  --accent: #059669;
+  --accent-strong: #047857;
+  --accent-soft: rgba(5, 150, 105, 0.09);
+
+  --danger: #dc2626;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--background);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+::selection {
+  background: rgba(16, 185, 129, 0.22);
+  color: var(--foreground);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--foreground) 12%, transparent);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--foreground) 18%, transparent);
+}
+
+/*
+  LIGHT MODE COMPATIBILITY LAYER
+
+  Your current UI was authored with dark Tailwind utility classes such as
+  text-white/40, bg-white/[0.025], border-white/[0.08], and bg-black/10.
+  These rules allow the existing screens to become light-theme aware without
+  forcing an immediate rewrite of every component.
+*/
+html[data-theme="light"] [class*="bg-[#05070b]"],
+html[data-theme="light"] [class*="bg-[#07090d]"],
+html[data-theme="light"] [class*="bg-[#090c11]"] {
+  background-color: var(--background) !important;
+}
+
+html[data-theme="light"] [class*="bg-white/"],
+html[data-theme="light"] [class*="bg-black/"] {
+  background-color: var(--surface) !important;
+}
+
+html[data-theme="light"] [class*="border-white/"] {
+  border-color: var(--border) !important;
+}
+
+html[data-theme="light"] [class*="text-white"] {
+  color: var(--foreground) !important;
+}
+
+html[data-theme="light"] [class*="text-emerald-100"],
+html[data-theme="light"] [class*="text-emerald-200"],
+html[data-theme="light"] [class*="text-emerald-300"] {
+  color: var(--accent-strong) !important;
+}
+
+html[data-theme="light"] [class*="bg-emerald-300"] {
+  background-color: #10b981 !important;
+}
+
+html[data-theme="light"] [class*="bg-emerald-400"] {
+  background-color: rgba(16, 185, 129, 0.09) !important;
+}
+
+html[data-theme="light"] [class*="border-emerald-400"] {
+  border-color: rgba(5, 150, 105, 0.18) !important;
+}
+
+html[data-theme="light"] [class*="shadow-[0_"],
+html[data-theme="light"] [class*="shadow-2xl"] {
+  box-shadow: 0 18px 55px rgba(15, 76, 46, 0.08) !important;
+}
+
+html[data-theme="light"] input,
+html[data-theme="light"] select,
+html[data-theme="light"] textarea {
+  color: var(--foreground);
+}
+
+html[data-theme="light"] input::placeholder,
+html[data-theme="light"] textarea::placeholder {
+  color: rgba(16, 32, 25, 0.34);
+}
+
+html[data-theme="light"] .ig-theme-toggle {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(5, 150, 105, 0.16);
+  color: #065f46;
+}
+
+html[data-theme="dark"] .ig-theme-toggle {
+  background: rgba(255, 255, 255, 0.035);
+  border-color: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.ig-theme-toggle {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.ig-theme-toggle:active {
+  transform: scale(0.96);
+}
+
+.ig-growth-grid {
+  stroke: color-mix(in srgb, var(--foreground) 9%, transparent);
+}
+
+.ig-growth-area {
+  fill: url(#portfolioGrowthArea);
+}
+
+.ig-growth-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ig-invested-line {
+  fill: none;
+  stroke: color-mix(in srgb, var(--foreground) 34%, transparent);
+  stroke-width: 2;
+  stroke-dasharray: 6 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  body,
+  .ig-theme-toggle {
+    transition: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
