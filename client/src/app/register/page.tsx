@@ -155,7 +155,7 @@ export default function RegisterPage() {
     } catch {
       setMessageType("error");
       setMessage(
-        "Unable to reach InvestiGenie. Make sure the app server is running and try again."
+        "Unable to reach TopOne. Make sure the app server is running and try again."
       );
     } finally {
       setLoading(false);
@@ -206,7 +206,7 @@ export default function RegisterPage() {
               </h1>
 
               <p className="mt-4 max-w-sm text-sm leading-6 text-white/38">
-                Create your private InvestiGenie account
+                Create your private TopOne account
                 and start building your financial profile,
                 risk identity and Wealth DNA.
               </p>
@@ -398,8 +398,9 @@ export default function RegisterPage() {
           </div>
 
           <p className="text-xs text-white/18">
-            InvestiGenie · Private financial intelligence
+            TopOne · Private financial intelligence
           </p>
+
         </div>
 
         <div className="flex min-h-screen items-center justify-center px-8 py-12 xl:px-14">
@@ -584,10 +585,7 @@ function BrandMark({
           compact ? "text-xl" : "text-2xl"
         }`}
       >
-        Investi
-        <span className="text-emerald-300">
-          Genie
-        </span>
+        <span className="text-emerald-300">Top</span>One
       </span>
     </Link>
   );
@@ -753,7 +751,8 @@ function ConsentBox({
       />
 
       <span className="text-[11px] leading-5 text-white/32">
-        I agree to InvestiGenie&apos;s{" "}
+        I agree to TopOne&apos;s{" "}
+
         <Link
           href="/terms"
           className="text-emerald-200/75"

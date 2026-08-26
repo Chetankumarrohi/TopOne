@@ -32,6 +32,8 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+TopOne_venv/
+topone_venv/
 investigenie_venv/
 venv/
 ENV/

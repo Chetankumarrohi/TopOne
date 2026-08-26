@@ -69,6 +69,8 @@ import app.investments.models.fund_pipeline_run
 import app.investments.models.fund_pipeline_lock
 import app.investments.models.fund_pipeline_incident
 import app.investments.models.portfolio_snapshot
+import app.investments.models.portfolio_transaction
+
 
 
 # Create database tables
@@ -98,7 +100,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="InvestiGenie API",
+    title="TopOne API",
     version="1.0.0",
     description="AI Wealth Operating System",
     lifespan=lifespan,
@@ -142,7 +144,7 @@ app.include_router(pipeline_admin_router)
 @app.get("/", tags=["System"])
 def root():
     return {
-        "message": "InvestiGenie API Running 🚀"
+        "message": "TopOne API Running 🚀"
     }
 
 

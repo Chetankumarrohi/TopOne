@@ -107,7 +107,7 @@ def fetch_amfi_history(
                 timeout=REQUEST_TIMEOUT,
                 headers={
                     "User-Agent":
-                        "Mozilla/5.0 InvestiGenie/1.0",
+                        "Mozilla/5.0 TopOne/1.0",
 
                     "Accept":
                         "text/plain,text/html,*/*",
@@ -713,7 +713,7 @@ def sync_historical_nav(
     )
 
     print(
-        "InvestiGenie Historical NAV Sync"
+        "TopOne Historical NAV Sync"
     )
 
     print(

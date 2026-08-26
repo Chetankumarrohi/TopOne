@@ -1067,7 +1067,7 @@ def generate_health_summary(
 
     parts = [
         (
-            "InvestiGenie Fund Health Score: "
+            "TopOne Fund Health Score: "
             f"{round(score, 1)}/100."
         )
     ]
@@ -1405,7 +1405,7 @@ def _peer_summary(
 
     if absolute_score is not None:
         parts.append(
-            "InvestiGenie Fund Health Score: "
+            "TopOne Fund Health Score: "
             f"{round(absolute_score, 1)}/100."
         )
 

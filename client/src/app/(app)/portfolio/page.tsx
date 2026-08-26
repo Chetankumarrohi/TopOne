@@ -171,7 +171,7 @@ export default function PortfolioPage() {
 
   useEffect(() => {
     const saved =
-      localStorage.getItem("investigenie-theme");
+      localStorage.getItem("topone-theme") || localStorage.getItem("investigenie-theme");
 
     const initial =
       saved === "light" ? "light" : "dark";
@@ -191,10 +191,11 @@ export default function PortfolioPage() {
     document.documentElement.dataset.theme =
       next;
     localStorage.setItem(
-      "investigenie-theme",
+      "topone-theme",
       next
     );
   }
+
 
   async function addHolding(
     event: React.FormEvent<HTMLFormElement>
@@ -414,10 +415,7 @@ export default function PortfolioPage() {
             </div>
 
             <span className="text-xl font-semibold tracking-[-0.03em]">
-              Investi
-              <span className="text-emerald-300">
-                Genie
-              </span>
+              <span className="text-emerald-300">Top</span>One
             </span>
 
           </button>
@@ -748,11 +746,12 @@ export default function PortfolioPage() {
 
               <p className="mt-4 text-sm leading-6 text-white/40">
                 As holdings are connected,
-                InvestiGenie will analyze
+                TopOne will analyze
                 diversification, concentration,
                 goal alignment, risk exposure and
                 future suitability.
               </p>
+
 
 
               <div className="mt-7 space-y-3">

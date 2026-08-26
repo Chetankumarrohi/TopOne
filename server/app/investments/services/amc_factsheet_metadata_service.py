@@ -290,7 +290,7 @@ def fetch_pdf_bytes(
             timeout=REQUEST_TIMEOUT,
             headers={
                 "User-Agent":
-                    "InvestiGenie/1.0",
+                    "TopOne/1.0",
                 "Accept":
                     "application/pdf,"
                     "application/octet-stream;q=0.9,"

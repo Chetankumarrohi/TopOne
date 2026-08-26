@@ -190,10 +190,7 @@ export default function FinancialProfilePage() {
             onClick={() => router.push("/dashboard")}
             className="text-xl font-semibold tracking-tight"
           >
-            Investi
-            <span className="text-emerald-400">
-              Genie
-            </span>
+            <span className="text-emerald-300">Top</span>One
           </button>
 
           <button
@@ -216,7 +213,8 @@ export default function FinancialProfilePage() {
           </h1>
 
           <p className="mt-4 text-sm leading-6 text-white/45">
-            These values help InvestiGenie calculate your
+            These values help TopOne calculate your
+
             financial health, risk capacity, Wealth DNA and
             future simulations.
           </p>
@@ -366,7 +364,8 @@ export default function FinancialProfilePage() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs leading-5 text-white/30">
-              InvestiGenie calculates derived metrics
+              TopOne calculates derived metrics
+
               automatically. You cannot manually edit them.
             </p>
 

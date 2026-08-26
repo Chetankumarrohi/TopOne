@@ -36,6 +36,7 @@ logger = logging.getLogger(__name__)
 SCHEDULER_TIMEZONE = "Asia/Kolkata"
 
 DAILY_PIPELINE_JOB_ID = "daily_fund_pipeline"
+DAILY_SNAPSHOT_JOB_ID = "daily_portfolio_snapshots"
 
 
 # =========================================================
@@ -241,6 +242,42 @@ def execute_daily_fund_pipeline():
         db.close()
 
 
+def execute_daily_portfolio_snapshots():
+    """
+    Scheduler entry point for daily portfolio snapshot capturing.
+
+    Runs after the daily fund pipeline (at 03:00 IST) to snapshot
+    all active users with holdings using fresh NAV valuation data.
+    """
+    logger.info("Scheduled daily portfolio snapshot execution started.")
+
+    from app.investments.services.portfolio_snapshot_batch_service import (
+        run_daily_portfolio_snapshots,
+    )
+
+    db = SessionLocal()
+
+    try:
+        result = run_daily_portfolio_snapshots(db=db)
+
+        logger.info(
+            "Scheduled daily portfolio snapshots completed: total=%d succeeded=%d failed=%d duration=%ss",
+            result.get("total_users", 0),
+            result.get("succeeded", 0),
+            result.get("failed", 0),
+            result.get("duration_seconds", 0.0),
+        )
+
+        return result
+
+    except Exception:
+        logger.exception("Scheduled daily portfolio snapshots execution failed.")
+        raise
+
+    finally:
+        db.close()
+
+
 # =========================================================
 # EVENT LISTENER
 # =========================================================
@@ -326,7 +363,35 @@ def _build_scheduler(
         misfire_grace_time=3600,
     )
 
+    # -----------------------------------------------------
+    # DAILY PORTFOLIO SNAPSHOTS
+    # -----------------------------------------------------
+    #
+    # Runs every day at 03:00 IST (after fund pipeline).
+    # -----------------------------------------------------
+
+    scheduler.add_job(
+        execute_daily_portfolio_snapshots,
+
+        trigger=CronTrigger(
+            hour=3,
+            minute=0,
+            timezone=SCHEDULER_TIMEZONE,
+        ),
+
+        id=DAILY_SNAPSHOT_JOB_ID,
+
+        replace_existing=True,
+
+        max_instances=1,
+
+        coalesce=True,
+
+        misfire_grace_time=3600,
+    )
+
     return scheduler
+
 
 
 # =========================================================
@@ -419,53 +484,44 @@ def stop_fund_scheduler():
 # SCHEDULER STATUS
 # =========================================================
 
-def get_fund_scheduler_status(
-) -> dict:
+def get_fund_scheduler_status() -> dict:
     """
     Return the current process-local scheduler state.
     """
 
     scheduler = _scheduler
 
-    if (
-        scheduler is None
-        or not scheduler.running
-    ):
+    if scheduler is None or not scheduler.running:
         return {
-            "running":
-                False,
-
-            "timezone":
-                SCHEDULER_TIMEZONE,
-
-            "job_id":
-                DAILY_PIPELINE_JOB_ID,
-
-            "next_run_time":
-                None,
+            "running": False,
+            "timezone": SCHEDULER_TIMEZONE,
+            "job_id": DAILY_PIPELINE_JOB_ID,
+            "next_run_time": None,
+            "jobs": {},
         }
 
-    job = scheduler.get_job(
-        DAILY_PIPELINE_JOB_ID
-    )
+    pipeline_job = scheduler.get_job(DAILY_PIPELINE_JOB_ID)
+    snapshot_job = scheduler.get_job(DAILY_SNAPSHOT_JOB_ID)
 
     return {
-        "running":
-            True,
-
-        "timezone":
-            SCHEDULER_TIMEZONE,
-
-        "job_id":
-            DAILY_PIPELINE_JOB_ID,
-
-        "next_run_time":
-            (
-                job.next_run_time.isoformat()
-                if (
-                    job
-                    and job.next_run_time
-                )
+        "running": True,
+        "timezone": SCHEDULER_TIMEZONE,
+        "job_id": DAILY_PIPELINE_JOB_ID,
+        "next_run_time": (
+            pipeline_job.next_run_time.isoformat()
+            if (pipeline_job and pipeline_job.next_run_time)
+            else None
+        ),
+        "jobs": {
+            DAILY_PIPELINE_JOB_ID: (
+                pipeline_job.next_run_time.isoformat()
+                if (pipeline_job and pipeline_job.next_run_time)
                 else None
             ),
+            DAILY_SNAPSHOT_JOB_ID: (
+                snapshot_job.next_run_time.isoformat()
+                if (snapshot_job and snapshot_job.next_run_time)
+                else None
+            ),
+        },
     }

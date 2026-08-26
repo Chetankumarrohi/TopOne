@@ -30,7 +30,7 @@ export default function Home() {
             <div className="h-3 w-3 rounded-full bg-emerald-300 shadow-[0_0_18px_rgba(110,231,183,.8)]" />
           </div>
           <div className="text-xl font-semibold tracking-[-0.03em]">
-            Investi<span className="text-emerald-300">Genie</span>
+            TopOne
           </div>
         </Link>
 
@@ -79,9 +79,10 @@ export default function Home() {
         </h1>
 
         <p className="mt-8 max-w-2xl text-base leading-7 text-white/45 sm:text-lg">
-          InvestiGenie turns your finances, goals and risk profile into a living
+          TopOne turns your finances, goals and risk profile into a living
           financial model — then helps you understand what to do next.
         </p>
+
 
         <div className="mt-10 flex flex-col gap-3 sm:flex-row">
           <Link
@@ -96,7 +97,7 @@ export default function Home() {
             href="#features"
             className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.045] px-7 py-3.5 font-medium text-white/80 backdrop-blur-xl transition duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.075] hover:text-white"
           >
-            Explore InvestiGenie
+            Explore TopOne
           </a>
         </div>
 
@@ -171,8 +172,9 @@ export default function Home() {
 
                   <div className="relative">
                     <p className="text-xs uppercase tracking-[0.14em] text-emerald-200/70">
-                      InvestiGenie Insight
+                      TopOne Insight
                     </p>
+
 
                     <h3 className="mt-5 text-2xl font-medium leading-snug tracking-[-0.03em]">
                       Your emergency fund is the next move.

@@ -318,8 +318,9 @@ export default function FundDetailPage() {
 
       } catch {
         setError(
-          "Could not connect to InvestiGenie backend."
+          "Could not connect to TopOne backend."
         );
+
       } finally {
         setLoading(false);
       }
@@ -554,10 +555,7 @@ export default function FundDetailPage() {
             </div>
 
             <span className="text-xl font-semibold tracking-[-0.03em]">
-              Investi
-              <span className="text-emerald-300">
-                Genie
-              </span>
+              <span className="text-emerald-300">Top</span>One
             </span>
 
           </button>
@@ -1096,7 +1094,7 @@ export default function FundDetailPage() {
           </div>
 
 
-          {/* InvestiGenie AI placeholder */}
+          {/* TopOne AI placeholder */}
 
           <div className="relative overflow-hidden rounded-[30px] border border-emerald-400/15 bg-gradient-to-b from-emerald-400/[0.07] to-emerald-400/[0.025] p-7">
 
@@ -1106,8 +1104,9 @@ export default function FundDetailPage() {
             <div className="relative">
 
               <p className="text-[10px] uppercase tracking-[0.14em] text-emerald-200/65">
-                INVESTIGENIE INTELLIGENCE
+                TOPONE INTELLIGENCE
               </p>
+
 
               <h3 className="mt-4 text-2xl font-medium leading-snug">
                 Personalized intelligence is coming next.
@@ -1160,7 +1159,8 @@ export default function FundDetailPage() {
           <SectionHeading
             eyebrow="FUND DETAILS"
             title="About this investment"
-            description="Scheme information currently available in InvestiGenie."
+            description="Scheme information currently available in TopOne."
+
           />
 
 

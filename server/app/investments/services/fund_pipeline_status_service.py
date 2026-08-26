@@ -26,7 +26,7 @@ def get_pipeline_status(
 ) -> dict[str, Any]:
     """
     Return a complete operational status view for the
-    daily InvestiGenie mutual-fund data pipeline.
+    daily TopOne mutual-fund data pipeline.
 
     Combines:
     - pipeline audit health

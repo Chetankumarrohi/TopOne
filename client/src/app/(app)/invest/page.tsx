@@ -171,8 +171,9 @@ export default function InvestPage() {
         setProducts(data);
       } catch {
         setError(
-          "Could not connect to InvestiGenie backend."
+          "Could not connect to TopOne backend."
         );
+
       } finally {
         setLoading(false);
       }
@@ -430,10 +431,7 @@ export default function InvestPage() {
             </div>
 
             <span className="text-xl font-semibold tracking-[-0.03em]">
-              Investi
-              <span className="text-emerald-300">
-                Genie
-              </span>
+              <span className="text-emerald-300">Top</span>One
             </span>
 
           </button>
@@ -502,7 +500,8 @@ export default function InvestPage() {
 
             <p className="mt-4 max-w-2xl text-sm leading-6 text-white/40">
               Explore investment products from the
-              InvestiGenie catalog. Suitability
+              TopOne catalog. Suitability
+
               intelligence will progressively combine
               your risk profile, goals, portfolio,
               Wealth DNA and market signals.
@@ -951,7 +950,8 @@ export default function InvestPage() {
 
             <p className="mt-4 text-center text-[11px] leading-5 text-white/20">
               Development flow only. This currently
-              creates an internal InvestiGenie order.
+              creates an internal TopOne order.
+
               Real KYC, mandate, payment and regulated
               execution will be connected through an
               authorized execution provider.

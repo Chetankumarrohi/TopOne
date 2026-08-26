@@ -150,7 +150,7 @@ export default function DashboardPage() {
         }
       } catch {
         setError(
-          "Could not connect to InvestiGenie backend."
+          "Could not connect to TopOne backend."
         );
       } finally {
         setLoading(false);
@@ -214,7 +214,7 @@ export default function DashboardPage() {
               <div className="h-3 w-3 rounded-full bg-emerald-300 shadow-[0_0_16px_rgba(110,231,183,.75)]" />
             </div>
             <span className="text-xl font-semibold tracking-[-0.03em]">
-              Investi<span className="text-emerald-300">Genie</span>
+              TopOne
             </span>
           </button>
 
@@ -280,7 +280,7 @@ export default function DashboardPage() {
               </h1>
 
               <p className="mt-5 max-w-2xl text-sm leading-6 text-white/40 sm:text-base">
-                Your financial identity is connected. InvestiGenie is tracking
+                Your financial identity is connected. TopOne is tracking
                 your financial health, risk profile, goals and future trajectory
                 in one place.
               </p>
@@ -579,7 +579,7 @@ export default function DashboardPage() {
             <div className="pointer-events-none absolute right-[-4rem] top-[-4rem] h-40 w-40 rounded-full bg-emerald-300/[0.1] blur-3xl" />
             <div className="relative">
               <p className="text-[11px] font-medium tracking-[0.15em] text-emerald-200/70">
-                INVESTIGENIE INSIGHT
+                TOPONE INSIGHT
               </p>
 
               {wealthDNA ? (
@@ -637,7 +637,7 @@ export default function DashboardPage() {
                     Complete your financial identity.
                   </h3>
                   <p className="mt-4 text-sm leading-6 text-white/40">
-                    InvestiGenie unlocks progressively as your financial profile,
+                    TopOne unlocks progressively as your financial profile,
                     risk assessment and goals come together.
                   </p>
                 </>

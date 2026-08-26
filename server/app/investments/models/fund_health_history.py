@@ -19,7 +19,7 @@ from app.common.mixins import TimestampMixin
 
 class FundHealthHistory(Base, TimestampMixin):
     """
-    Daily historical snapshot of InvestiGenie Fund Health.
+    Daily historical snapshot of TopOne Fund Health.
 
     One row per product per UTC calendar day.
 

@@ -15,3 +15,6 @@ from app.investments.models.fund_pipeline_incident import (
 from app.investments.models.portfolio_snapshot import (
     PortfolioSnapshot,
 )
+from app.investments.models.portfolio_transaction import (
+    PortfolioTransaction,
+)

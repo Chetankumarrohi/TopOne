@@ -922,7 +922,7 @@ def calculate_all_fund_returns(
     )
 
     print(
-        "InvestiGenie Return Intelligence Engine"
+        "TopOne Return Intelligence Engine"
     )
 
     print(

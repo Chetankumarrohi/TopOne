@@ -50,7 +50,7 @@ export default function DesktopSidebar() {
             <div className="h-3 w-3 rounded-full bg-emerald-300 shadow-[0_0_16px_rgba(110,231,183,.75)]" />
           </div>
           <span className="text-xl font-semibold tracking-[-0.04em]">
-            Investi<span className="text-emerald-300">Genie</span>
+            TopOne
           </span>
         </button>
       </div>

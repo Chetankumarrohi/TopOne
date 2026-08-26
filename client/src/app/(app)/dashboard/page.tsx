@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -108,7 +108,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const saved =
-      localStorage.getItem("investigenie-theme");
+      localStorage.getItem("topone-theme") || localStorage.getItem("investigenie-theme");
 
     const initialTheme: ThemeMode =
       saved === "light" ? "light" : "dark";
@@ -126,9 +126,10 @@ export default function DashboardPage() {
     document.documentElement.dataset.theme =
       nextTheme;
     localStorage.setItem(
-      "investigenie-theme",
+      "topone-theme",
       nextTheme
     );
+
   }
 
   useEffect(() => {
@@ -285,8 +286,9 @@ export default function DashboardPage() {
       } catch {
         if (!cancelled) {
           setError(
-            "Could not connect to InvestiGenie backend."
+            "Could not connect to TopOne backend."
           );
+
         }
       } finally {
         if (!cancelled) {
@@ -489,12 +491,13 @@ function MobileDashboard({
 
       <PortfolioGrowthCard
         summary={portfolioSummary}
-        history={portfolioHistory}
         compact
+        theme={theme}
         onOpenPortfolio={() =>
           router.push("/portfolio")
         }
       />
+
 
       <section className="mt-4">
         <div className="mb-2 flex items-center justify-between">
@@ -541,8 +544,9 @@ function MobileDashboard({
 
             <div>
               <p className="text-[10px] font-medium tracking-[0.14em] text-emerald-200/60">
-                INVESTIGENIE AI
+                TOPONE AI
               </p>
+
               <p className="mt-0.5 text-sm font-medium">
                 Your next best move
               </p>
@@ -859,11 +863,12 @@ function DesktopDashboard({
 
       <PortfolioGrowthCard
         summary={portfolioSummary}
-        history={portfolioHistory}
+        theme={theme}
         onOpenPortfolio={() =>
           router.push("/portfolio")
         }
       />
+
 
       <section className="mt-5 grid grid-cols-4 gap-3">
         <QuickMetric
@@ -1254,8 +1259,9 @@ function InsightCard({
       <div className="relative flex h-full flex-col">
         <div className="flex items-center justify-between">
           <p className="text-[10px] font-medium tracking-[0.17em] text-emerald-200/65">
-            INVESTIGENIE INSIGHT
+            TOPONE INSIGHT
           </p>
+
 
           <Sparkles
             size={18}
@@ -1329,7 +1335,8 @@ function getInsightText(
     return "Create at least one financial goal to connect your risk profile with your future financial plan.";
   }
 
-  return "Finish your financial profile and risk assessment so InvestiGenie can personalize your recommendations.";
+  return "Finish your financial profile and risk assessment so TopOne can personalize your recommendations.";
+
 }
 
 function MiniStat({
@@ -1923,157 +1930,192 @@ function ThemeToggle({
   );
 }
 
+function formatHumanDate(dateStr: string): string {
+  if (!dateStr) return "";
+  try {
+    const parts = dateStr.split("-");
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      const d = new Date(year, month, day);
+      return d.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+    }
+    return dateStr;
+  } catch {
+    return dateStr;
+  }
+}
+
+function formatShortDate(dateStr: string): string {
+  if (!dateStr) return "";
+  try {
+    const parts = dateStr.split("-");
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      const d = new Date(year, month, day);
+      return d.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+      });
+    }
+    return dateStr;
+  } catch {
+    return dateStr;
+  }
+}
+
 function PortfolioGrowthCard({
   summary,
-  history,
   onOpenPortfolio,
   compact = false,
+  theme = "dark",
 }: {
   summary: PortfolioSummary | null;
-  history: PortfolioHistoryPoint[];
   onOpenPortfolio: () => void;
   compact?: boolean;
+  theme?: ThemeMode;
 }) {
-  const [range, setRange] = useState<
-    "1M" | "3M" | "6M" | "1Y" | "ALL"
-  >("1Y");
+  const [range, setRange] = useState<"1M" | "3M" | "6M" | "1Y" | "ALL">("1M");
+  const [historyPoints, setHistoryPoints] = useState<PortfolioHistoryPoint[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
-  const points = useMemo(() => {
-    const clean = history
-      .filter(
-        (point) =>
-          point?.date &&
-          Number.isFinite(point.market_value) &&
-          Number.isFinite(point.invested_value)
-      )
-      .map((point) => ({
-        ...point,
-        timestamp: new Date(
-          `${point.date}T00:00:00`
-        ).getTime(),
-      }))
-      .filter((point) =>
-        Number.isFinite(point.timestamp)
-      )
-      .sort(
-        (a, b) => a.timestamp - b.timestamp
-      );
-
-    if (
-      range === "ALL" ||
-      clean.length === 0
-    ) {
-      return clean;
+  const fetchHistory = useCallback(async (selectedRange: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem("access_token");
+      const res = await fetch(`${API_BASE}/portfolio/history?range=${selectedRange}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) {
+        throw new Error(`Failed to fetch history (${res.status})`);
+      }
+      const data = await res.json();
+      setHistoryPoints(Array.isArray(data) ? data : []);
+    } catch (err: any) {
+      console.error("Portfolio history API error:", err);
+      setError(err?.message || "Failed to load portfolio history");
+    } finally {
+      setLoading(false);
     }
+  }, []);
 
-    const latest =
-      clean[clean.length - 1].timestamp;
+  useEffect(() => {
+    fetchHistory(range);
+  }, [range, fetchHistory]);
 
-    const days =
-      range === "1M"
-        ? 31
-        : range === "3M"
-          ? 93
-          : range === "6M"
-            ? 186
-            : 366;
+  const latestPoint = historyPoints.length > 0 ? historyPoints[historyPoints.length - 1] : null;
 
-    const cutoff =
-      latest - days * 24 * 60 * 60 * 1000;
-
-    return clean.filter(
-      (point) => point.timestamp >= cutoff
-    );
-  }, [history, range]);
+  const current = latestPoint ? latestPoint.market_value : (summary?.current_value ?? 0);
+  const invested = latestPoint ? latestPoint.invested_value : (summary?.total_invested ?? 0);
+  const gain = latestPoint && latestPoint.pnl !== undefined
+    ? latestPoint.pnl
+    : (summary?.total_gain ?? (current - invested));
+  const positive = gain >= 0;
+  const gainPercentage = latestPoint && (latestPoint as any).pnl_percentage !== undefined
+    ? (latestPoint as any).pnl_percentage
+    : (invested > 0 ? (gain / invested) * 100 : (summary?.total_gain_percentage ?? 0));
 
   const chart = useMemo(() => {
-    if (points.length < 2) {
-      return null;
-    }
+    if (historyPoints.length < 2) return null;
 
     const width = 1000;
     const height = compact ? 230 : 300;
-    const left = 10;
-    const right = 10;
-    const top = 18;
-    const bottom = 18;
+    const left = 40;
+    const right = 40;
+    const top = 30;
+    const bottom = 40;
 
-    const values = points.flatMap((point) => [
-      point.market_value,
-      point.invested_value,
-    ]);
-
+    const values = historyPoints.flatMap((p) => [p.market_value, p.invested_value]);
     let min = Math.min(...values);
     let max = Math.max(...values);
 
     if (max === min) {
-      max += 1;
-      min -= 1;
+      max += max > 0 ? max * 0.1 : 1;
+      min -= min > 0 ? min * 0.1 : 1;
     }
 
-    const padding = (max - min) * 0.1;
-    min -= padding;
-    max += padding;
+    const padding = (max - min) * 0.12;
+    min = Math.max(0, min - padding);
+    max = max + padding;
 
-    const x = (index: number) =>
-      left +
-      (index / (points.length - 1)) *
-        (width - left - right);
+    const getX = (index: number) =>
+      left + (index / (historyPoints.length - 1)) * (width - left - right);
 
-    const y = (value: number) =>
-      top +
-      ((max - value) / (max - min)) *
-        (height - top - bottom);
+    const getY = (val: number) =>
+      top + ((max - val) / (max - min)) * (height - top - bottom);
 
-    const market = points
-      .map(
-        (point, index) =>
-          `${x(index)},${y(point.market_value)}`
-      )
-      .join(" ");
+    const marketPath = historyPoints.map((p, i) => `${getX(i)},${getY(p.market_value)}`).join(" ");
+    const investedPath = historyPoints.map((p, i) => `${getX(i)},${getY(p.invested_value)}`).join(" ");
 
-    const invested = points
-      .map(
-        (point, index) =>
-          `${x(index)},${y(point.invested_value)}`
-      )
-      .join(" ");
-
-    const area = [
-      `${x(0)},${height - bottom}`,
-      ...points.map(
-        (point, index) =>
-          `${x(index)},${y(point.market_value)}`
-      ),
-      `${x(
-        points.length - 1
-      )},${height - bottom}`,
+    const areaPath = [
+      `${getX(0)},${height - bottom}`,
+      ...historyPoints.map((p, i) => `${getX(i)},${getY(p.market_value)}`),
+      `${getX(historyPoints.length - 1)},${height - bottom}`,
     ].join(" ");
+
+    const pointsCoords = historyPoints.map((p, i) => ({
+      x: getX(i),
+      yMarket: getY(p.market_value),
+      yInvested: getY(p.invested_value),
+      data: p,
+    }));
 
     return {
       width,
       height,
-      market,
-      invested,
-      area,
+      marketPath,
+      investedPath,
+      areaPath,
+      pointsCoords,
       min,
       max,
+      left,
+      right,
+      top,
+      bottom,
     };
-  }, [points, compact]);
+  }, [historyPoints, compact]);
 
-  const current =
-    summary?.current_value ?? 0;
-  const invested =
-    summary?.total_invested ?? 0;
-  const gain =
-    summary?.total_gain ?? current - invested;
-  const positive = gain >= 0;
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!chart || historyPoints.length < 2) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const svgX = (mouseX / rect.width) * chart.width;
+
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    chart.pointsCoords.forEach((pt, idx) => {
+      const diff = Math.abs(pt.x - svgX);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = idx;
+      }
+    });
+
+    setHoverIndex(closestIdx);
+  };
+
+  const handleMouseLeave = () => {
+    setHoverIndex(null);
+  };
 
   return (
     <section
-      className={`mt-5 overflow-hidden rounded-[28px] border border-white/[0.075] bg-white/[0.025] ${
-        compact ? "p-4" : "p-7"
-      }`}
+      className={`mt-5 overflow-hidden rounded-[28px] border transition-colors ${
+        theme === "light"
+          ? "border-slate-200 bg-white shadow-sm"
+          : "border-white/[0.075] bg-white/[0.025]"
+      } ${compact ? "p-4" : "p-7"}`}
     >
       <div
         className={`flex ${
@@ -2086,9 +2128,13 @@ function PortfolioGrowthCard({
           <div className="flex items-center gap-2">
             <LineChart
               size={16}
-              className="text-emerald-300"
+              className={theme === "light" ? "text-emerald-600" : "text-emerald-300"}
             />
-            <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-emerald-200/65">
+            <p
+              className={`text-[10px] font-medium uppercase tracking-[0.16em] ${
+                theme === "light" ? "text-emerald-700" : "text-emerald-200/65"
+              }`}
+            >
               Portfolio growth
             </p>
           </div>
@@ -2096,49 +2142,53 @@ function PortfolioGrowthCard({
           <div className="mt-2 flex flex-wrap items-end gap-x-4 gap-y-1">
             <p
               className={`font-semibold tracking-[-0.04em] ${
-                compact
-                  ? "text-2xl"
-                  : "text-3xl"
-              }`}
+                compact ? "text-2xl" : "text-3xl"
+              } ${theme === "light" ? "text-slate-900" : "text-white"}`}
             >
               ₹{formatCompactMoney(current)}
             </p>
 
-            {summary && (
-              <p
-                className={`pb-1 text-sm font-medium ${
-                  positive
-                    ? "text-emerald-300"
-                    : "text-red-300"
-                }`}
-              >
-                {positive ? "+" : ""}
-                {summary.total_gain_percentage.toFixed(
-                  2
-                )}
-                %
-              </p>
-            )}
+            <p
+              className={`pb-1 text-sm font-medium ${
+                positive
+                  ? theme === "light" ? "text-emerald-600" : "text-emerald-300"
+                  : theme === "light" ? "text-rose-600" : "text-red-300"
+              }`}
+            >
+              {positive ? "+" : ""}
+              {gainPercentage.toFixed(2)}%
+            </p>
           </div>
 
-          <p className="mt-1 text-xs text-white/30">
-            Current value vs. invested capital over
-            time
+          <p
+            className={`mt-1 text-xs ${
+              theme === "light" ? "text-slate-500" : "text-white/30"
+            }`}
+          >
+            Current value vs. invested capital over time
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1 rounded-2xl border border-white/[0.06] bg-black/10 p-1">
-          {(
-            ["1M", "3M", "6M", "1Y", "ALL"] as const
-          ).map((item) => (
+        <div
+          className={`flex flex-wrap items-center gap-1 rounded-2xl border p-1 ${
+            theme === "light"
+              ? "border-slate-200 bg-slate-100"
+              : "border-white/[0.06] bg-black/10"
+          }`}
+        >
+          {(["1M", "3M", "6M", "1Y", "ALL"] as const).map((item) => (
             <button
               key={item}
               type="button"
               onClick={() => setRange(item)}
               className={`min-h-8 rounded-xl px-2.5 text-[10px] font-medium transition ${
                 range === item
-                  ? "bg-emerald-300 text-[#04100c]"
-                  : "text-white/35 hover:text-white/70"
+                  ? theme === "light"
+                    ? "bg-emerald-600 text-white shadow-sm"
+                    : "bg-emerald-300 text-[#04100c]"
+                  : theme === "light"
+                    ? "text-slate-600 hover:text-slate-900"
+                    : "text-white/35 hover:text-white/70"
               }`}
             >
               {item}
@@ -2147,145 +2197,306 @@ function PortfolioGrowthCard({
         </div>
       </div>
 
-      {chart ? (
-        <div className="mt-5">
-          <svg
-            viewBox={`0 0 ${chart.width} ${chart.height}`}
-            className="block w-full"
-            role="img"
-            aria-label="Portfolio market value and invested value over time"
+      {loading ? (
+        <div className="mt-5 flex h-48 animate-pulse flex-col items-center justify-center rounded-2xl border border-dashed border-emerald-500/20 bg-emerald-500/5">
+          <LineChart size={28} className="animate-bounce text-emerald-400/60" />
+          <p className="mt-2 text-xs font-medium text-emerald-400">Loading portfolio history...</p>
+        </div>
+      ) : error ? (
+        <div className="mt-5 flex h-44 flex-col items-center justify-center rounded-2xl border border-rose-500/20 bg-rose-500/5 px-6 text-center">
+          <p className="text-xs font-medium text-rose-400">{error}</p>
+          <button
+            type="button"
+            onClick={() => fetchHistory(range)}
+            className="mt-3 rounded-xl bg-rose-500/20 px-3 py-1.5 text-xs font-medium text-rose-300 hover:bg-rose-500/30 transition"
           >
-            <defs>
-              <linearGradient
-                id="portfolioGrowthArea"
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop
-                  offset="0%"
-                  stopColor="var(--accent)"
-                  stopOpacity="0.22"
-                />
-                <stop
-                  offset="100%"
-                  stopColor="var(--accent)"
-                  stopOpacity="0"
-                />
-              </linearGradient>
-            </defs>
+            Retry
+          </button>
+        </div>
+      ) : historyPoints.length === 0 ? (
+        <div className="mt-5 overflow-hidden rounded-[22px] border border-dashed border-white/[0.08] bg-black/10">
+          <div className="relative h-44 flex flex-col items-center justify-center px-6 text-center">
+            <LineChart size={24} className="text-emerald-300/70" />
+            <p className="mt-3 text-sm font-medium">No Portfolio Snapshots Yet</p>
+            <p className="mt-1 max-w-md text-xs leading-5 text-white/40">
+              Daily snapshots will accumulate automatically over time. Check back tomorrow!
+            </p>
+            <button
+              type="button"
+              onClick={onOpenPortfolio}
+              className="mt-3 text-xs font-medium text-emerald-300 hover:underline"
+            >
+              Open portfolio →
+            </button>
+          </div>
+        </div>
+      ) : historyPoints.length === 1 ? (
+        <div className="mt-5 rounded-[22px] border border-emerald-500/20 bg-emerald-500/5 p-5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-emerald-300/80 font-medium">
+              1 Snapshot Recorded on {formatHumanDate(historyPoints[0].date)}
+            </span>
+            <span className="text-[10px] bg-emerald-400/20 text-emerald-300 px-2 py-0.5 rounded-full">
+              Graph ready tomorrow
+            </span>
+          </div>
+          <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div>
+              <p className="text-white/40 text-[10px]">Market Value</p>
+              <p className="font-semibold text-white mt-0.5">₹{historyPoints[0].market_value.toLocaleString("en-IN")}</p>
+            </div>
+            <div>
+              <p className="text-white/40 text-[10px]">Invested Value</p>
+              <p className="font-semibold text-white mt-0.5">₹{historyPoints[0].invested_value.toLocaleString("en-IN")}</p>
+            </div>
+            <div>
+              <p className="text-white/40 text-[10px]">P&L</p>
+              <p className={`font-semibold mt-0.5 ${historyPoints[0].pnl && historyPoints[0].pnl >= 0 ? "text-emerald-300" : "text-red-300"}`}>
+                {historyPoints[0].pnl && historyPoints[0].pnl >= 0 ? "+" : ""}₹{(historyPoints[0].pnl ?? 0).toLocaleString("en-IN")}
+              </p>
+            </div>
+            <div>
+              <p className="text-white/40 text-[10px]">P&L %</p>
+              <p className={`font-semibold mt-0.5 ${(historyPoints[0] as any).pnl_percentage >= 0 ? "text-emerald-300" : "text-red-300"}`}>
+                {(historyPoints[0] as any).pnl_percentage >= 0 ? "+" : ""}{(historyPoints[0] as any).pnl_percentage ?? 0}%
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : chart ? (
+        <div className="mt-5">
+          <div className="relative">
+            <svg
+              viewBox={`0 0 ${chart.width} ${chart.height}`}
+              className="block w-full cursor-crosshair touch-none"
+              role="img"
+              aria-label="Portfolio market value and invested value over time"
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              onTouchMove={(e) => {
+                if (e.touches[0]) {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const mouseX = e.touches[0].clientX - rect.left;
+                  const svgX = (mouseX / rect.width) * chart.width;
+                  let closestIdx = 0;
+                  let minDiff = Infinity;
+                  chart.pointsCoords.forEach((pt, idx) => {
+                    const diff = Math.abs(pt.x - svgX);
+                    if (diff < minDiff) {
+                      minDiff = diff;
+                      closestIdx = idx;
+                    }
+                  });
+                  setHoverIndex(closestIdx);
+                }
+              }}
+              onTouchEnd={handleMouseLeave}
+            >
+              <defs>
+                <linearGradient
+                  id="portfolioGrowthArea"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop
+                    offset="0%"
+                    stopColor={theme === "light" ? "#10b981" : "#34d399"}
+                    stopOpacity="0.25"
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor={theme === "light" ? "#10b981" : "#34d399"}
+                    stopOpacity="0"
+                  />
+                </linearGradient>
+              </defs>
 
-            {[0.25, 0.5, 0.75].map(
-              (ratio) => (
+              {[0.25, 0.5, 0.75].map((ratio) => (
                 <line
                   key={ratio}
-                  x1="10"
-                  x2="990"
+                  x1={chart.left}
+                  x2={chart.width - chart.right}
                   y1={chart.height * ratio}
                   y2={chart.height * ratio}
-                  className="ig-growth-grid"
+                  stroke={theme === "light" ? "#e2e8f0" : "rgba(255,255,255,0.06)"}
                   strokeWidth="1"
+                  strokeDasharray="4 4"
                 />
-              )
+              ))}
+
+              <polygon
+                points={chart.areaPath}
+                fill="url(#portfolioGrowthArea)"
+              />
+
+              <polyline
+                points={chart.investedPath}
+                fill="none"
+                stroke={theme === "light" ? "#94a3b8" : "rgba(255,255,255,0.4)"}
+                strokeWidth="2"
+                strokeDasharray="6 4"
+              />
+
+              <polyline
+                points={chart.marketPath}
+                fill="none"
+                stroke={theme === "light" ? "#059669" : "#34d399"}
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+
+              {hoverIndex !== null && chart.pointsCoords[hoverIndex] && (
+                <g>
+                  <line
+                    x1={chart.pointsCoords[hoverIndex].x}
+                    x2={chart.pointsCoords[hoverIndex].x}
+                    y1={chart.top}
+                    y2={chart.height - chart.bottom}
+                    stroke={theme === "light" ? "#64748b" : "rgba(255,255,255,0.3)"}
+                    strokeWidth="1"
+                    strokeDasharray="3 3"
+                  />
+                  <circle
+                    cx={chart.pointsCoords[hoverIndex].x}
+                    cy={chart.pointsCoords[hoverIndex].yInvested}
+                    r="4"
+                    fill={theme === "light" ? "#64748b" : "#94a3b8"}
+                  />
+                  <circle
+                    cx={chart.pointsCoords[hoverIndex].x}
+                    cy={chart.pointsCoords[hoverIndex].yMarket}
+                    r="6"
+                    fill={theme === "light" ? "#059669" : "#34d399"}
+                    stroke={theme === "light" ? "#ffffff" : "#04100c"}
+                    strokeWidth="2"
+                  />
+                </g>
+              )}
+
+              <text
+                x={chart.left}
+                y={chart.height - 10}
+                fill={theme === "light" ? "#64748b" : "rgba(255,255,255,0.4)"}
+                fontSize="10"
+                textAnchor="start"
+              >
+                {formatShortDate(historyPoints[0].date)}
+              </text>
+              {historyPoints.length > 2 && (
+                <text
+                  x={chart.width / 2}
+                  y={chart.height - 10}
+                  fill={theme === "light" ? "#64748b" : "rgba(255,255,255,0.4)"}
+                  fontSize="10"
+                  textAnchor="middle"
+                >
+                  {formatShortDate(
+                    historyPoints[Math.floor(historyPoints.length / 2)].date
+                  )}
+                </text>
+              )}
+              <text
+                x={chart.width - chart.right}
+                y={chart.height - 10}
+                fill={theme === "light" ? "#64748b" : "rgba(255,255,255,0.4)"}
+                fontSize="10"
+                textAnchor="end"
+              >
+                {formatShortDate(historyPoints[historyPoints.length - 1].date)}
+              </text>
+            </svg>
+
+            {hoverIndex !== null && chart.pointsCoords[hoverIndex] && (
+              <div
+                className={`absolute top-2 rounded-xl border p-2.5 shadow-xl backdrop-blur-md pointer-events-none transition-all text-xs z-10 ${
+                  theme === "light"
+                    ? "border-slate-200 bg-white/95 text-slate-800"
+                    : "border-white/20 bg-slate-900/90 text-white"
+                }`}
+                style={{
+                  left: `${Math.min(
+                    Math.max(
+                      (chart.pointsCoords[hoverIndex].x / chart.width) * 100,
+                      15
+                    ),
+                    85
+                  )}%`,
+                  transform: "translateX(-50%)",
+                }}
+              >
+                <p className="font-semibold text-[11px] opacity-70">
+                  {formatHumanDate(chart.pointsCoords[hoverIndex].data.date)}
+                </p>
+                <div className="mt-1 space-y-0.5 text-[11px]">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                      Market:
+                    </span>
+                    <span className="font-medium">
+                      ₹{chart.pointsCoords[hoverIndex].data.market_value.toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                      Invested:
+                    </span>
+                    <span className="font-medium">
+                      ₹{chart.pointsCoords[hoverIndex].data.invested_value.toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                  {chart.pointsCoords[hoverIndex].data.pnl !== undefined && (
+                    <div className="flex items-center justify-between gap-4 pt-1 border-t border-white/10">
+                      <span>P&L:</span>
+                      <span
+                        className={`font-semibold ${
+                          (chart.pointsCoords[hoverIndex].data.pnl ?? 0) >= 0
+                            ? "text-emerald-400"
+                            : "text-rose-400"
+                        }`}
+                      >
+                        {(chart.pointsCoords[hoverIndex].data.pnl ?? 0) >= 0 ? "+" : ""}
+                        ₹{(chart.pointsCoords[hoverIndex].data.pnl ?? 0).toLocaleString("en-IN")} (
+                        {(chart.pointsCoords[hoverIndex].data as any).pnl_percentage ?? 0}%)
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
-
-            <polygon
-              points={chart.area}
-              className="ig-growth-area"
-            />
-
-            <polyline
-              points={chart.invested}
-              className="ig-invested-line"
-            />
-
-            <polyline
-              points={chart.market}
-              className="ig-growth-line"
-            />
-          </svg>
+          </div>
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex flex-wrap items-center gap-4 text-white/35">
+            <div className="flex flex-wrap items-center gap-4 opacity-75">
               <span className="inline-flex items-center gap-2">
-                <span className="h-2 w-5 rounded-full bg-emerald-300" />
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                 Portfolio value
               </span>
               <span className="inline-flex items-center gap-2">
-                <span className="h-px w-5 bg-white/30" />
+                <span className="h-0.5 w-4 bg-slate-400" />
                 Invested
               </span>
             </div>
 
             <div className="flex items-center gap-4">
-              <span className="text-white/30">
-                Invested ₹
-                {formatCompactMoney(invested)}
+              <span className="opacity-60">
+                Invested ₹{formatCompactMoney(invested)}
               </span>
-              <span
-                className={
-                  positive
-                    ? "text-emerald-300"
-                    : "text-red-300"
-                }
-              >
-                {positive ? "+" : ""}
-                ₹{formatCompactMoney(gain)}
+              <span className={positive ? "text-emerald-400 font-medium" : "text-rose-400 font-medium"}>
+                {positive ? "+" : ""}₹{formatCompactMoney(gain)}
               </span>
             </div>
           </div>
         </div>
-      ) : (
-        <div className="mt-5 overflow-hidden rounded-[22px] border border-dashed border-white/[0.08] bg-black/10">
-          <div className="relative h-44">
-            <svg
-              viewBox="0 0 1000 220"
-              className="absolute inset-0 h-full w-full opacity-70"
-              aria-hidden="true"
-            >
-              {[55, 110, 165].map((y) => (
-                <line
-                  key={y}
-                  x1="0"
-                  x2="1000"
-                  y1={y}
-                  y2={y}
-                  className="ig-growth-grid"
-                  strokeWidth="1"
-                />
-              ))}
-            </svg>
-
-            <div className="relative flex h-full flex-col items-center justify-center px-6 text-center">
-              <LineChart
-                size={24}
-                className="text-emerald-300/70"
-              />
-              <p className="mt-3 text-sm font-medium">
-                Portfolio growth is ready for history
-                data
-              </p>
-              <p className="mt-1 max-w-md text-xs leading-5 text-white/30">
-                The graph will plot automatically once
-                portfolio snapshots are available. No
-                artificial performance data is shown.
-              </p>
-
-              <button
-                type="button"
-                onClick={onOpenPortfolio}
-                className="mt-3 text-xs font-medium text-emerald-200"
-              >
-                Open portfolio →
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      ) : null}
     </section>
   );
 }
+
 
 function DashboardSkeleton() {
   return (

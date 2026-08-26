@@ -50,7 +50,7 @@ def fetch_scheme_metadata(
         timeout=REQUEST_TIMEOUT,
         headers={
             "User-Agent":
-                "InvestiGenie/1.0",
+                "TopOne/1.0",
         },
     )
 

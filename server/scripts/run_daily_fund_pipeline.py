@@ -45,7 +45,7 @@ def main() -> int:
     try:
         print()
         print(
-            "INVESTIGENIE — DAILY FUND PIPELINE"
+            "TOPONE — DAILY FUND PIPELINE"
         )
         print("=" * 55)
 

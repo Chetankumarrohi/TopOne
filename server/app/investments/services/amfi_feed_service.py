@@ -73,7 +73,7 @@ def _fetch_url(url: str) -> str:
             AMFI_READ_TIMEOUT_SECONDS,
         ),
         headers={
-            "User-Agent": "InvestiGenie/1.0",
+            "User-Agent": "TopOne/1.0",
         },
         # We want explicit control over www -> portal fallback.
         allow_redirects=False,

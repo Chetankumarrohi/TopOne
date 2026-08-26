@@ -254,7 +254,7 @@ def run_daily_fund_pipeline(
             db=db,
             batch_size=return_batch_size,
         ),
-        source_name="InvestiGenie Analytics",
+        source_name="TopOne Analytics",
         source_type="INTERNAL",
     )
     stages.append(returns_stage)
@@ -276,7 +276,7 @@ def run_daily_fund_pipeline(
             db=db,
             batch_size=health_batch_size,
         ),
-        source_name="InvestiGenie Fund Form",
+        source_name="TopOne Fund Form",
         source_type="INTERNAL",
     )
     stages.append(health_stage)

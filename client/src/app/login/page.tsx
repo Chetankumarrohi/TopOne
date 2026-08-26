@@ -103,7 +103,8 @@ export default function LoginPage() {
     } catch {
       setMessageType("error");
       setMessage(
-        "Unable to reach InvestiGenie. Make sure the app server is running and try again."
+        "Unable to reach TopOne. Make sure the app server is running and try again."
+
       );
     } finally {
       setLoading(false);
@@ -271,12 +272,12 @@ export default function LoginPage() {
               />
               <p className="text-[11px] leading-5 text-white/28">
                 Your financial data is protected and used
-                only for your InvestiGenie experience.
+                only for your TopOne experience.
               </p>
             </div>
 
             <p className="mt-7 text-center text-sm text-white/35">
-              New to InvestiGenie?{" "}
+              New to TopOne?{" "}
               <Link
                 href="/register"
                 className="font-medium text-emerald-300"
@@ -343,8 +344,9 @@ export default function LoginPage() {
           </div>
 
           <p className="text-xs text-white/18">
-            InvestiGenie · Private financial intelligence
+            TopOne · Private financial intelligence
           </p>
+
         </div>
 
         <div className="flex min-h-screen items-center justify-center px-8 py-12 xl:px-14">
@@ -484,8 +486,9 @@ export default function LoginPage() {
             </div>
 
             <p className="mt-8 text-center text-sm text-white/35">
-              New to InvestiGenie?{" "}
+              New to TopOne?{" "}
               <Link
+
                 href="/register"
                 className="font-medium text-emerald-300 transition hover:text-emerald-200"
               >
@@ -545,10 +548,7 @@ function BrandMark({
           compact ? "text-xl" : "text-2xl"
         }`}
       >
-        Investi
-        <span className="text-emerald-300">
-          Genie
-        </span>
+        <span className="text-emerald-300">Top</span>One
       </span>
     </Link>
   );

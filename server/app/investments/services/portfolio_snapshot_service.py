@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.investments.models.portfolio_snapshot import PortfolioSnapshot
 from app.investments.services.portfolio_service import get_portfolio_summary
-
+from app.investments.services.portfolio_valuation_service import value_user_portfolio
 
 RANGE_DAYS_MAP = {
     "1M": 30,
@@ -22,8 +22,12 @@ def create_or_update_portfolio_snapshot(
 ) -> dict[str, Any]:
     """
     Creates or updates the daily portfolio snapshot for a given user.
+    Executes portfolio revaluation prior to capturing the snapshot.
     Operation is idempotent per (user_id, snapshot_date).
     """
+    # 1. Run dynamic portfolio valuation first
+    value_user_portfolio(db, user_id)
+
     target_date = snapshot_date or date.today()
 
     summary = get_portfolio_summary(db, user_id)

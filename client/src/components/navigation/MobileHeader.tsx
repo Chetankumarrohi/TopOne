@@ -36,7 +36,7 @@ export default function MobileHeader() {
 
           <div className="min-w-0 text-left">
             <span className="block text-lg font-semibold tracking-[-0.04em]">
-              Investi<span className="text-emerald-300">Genie</span>
+              TopOne
             </span>
 
             {pageLabel && (

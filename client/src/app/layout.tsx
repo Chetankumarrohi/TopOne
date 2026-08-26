@@ -1,9 +1,10 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "InvestiGenie",
+  title: "TopOne",
   description: "AI-Native Wealth Operating System",
 };
+
 
 export default function RootLayout({
   children,

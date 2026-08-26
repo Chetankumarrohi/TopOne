@@ -206,10 +206,7 @@ export default function GoalsPage() {
             onClick={() => router.push("/dashboard")}
             className="text-xl font-semibold tracking-tight"
           >
-            Investi
-            <span className="text-emerald-400">
-              Genie
-            </span>
+            <span className="text-emerald-300">Top</span>One
           </button>
 
           <button
@@ -232,7 +229,8 @@ export default function GoalsPage() {
           </h1>
 
           <p className="mt-4 text-sm leading-6 text-white/45">
-            Define what you want to achieve and InvestiGenie will
+            Define what you want to achieve and TopOne will
+
             calculate progress, remaining time and the monthly amount
             needed to reach it.
           </p>
@@ -366,7 +364,8 @@ export default function GoalsPage() {
                 </p>
 
                 <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-white/40">
-                  Create your first financial goal. InvestiGenie will
+                  Create your first financial goal. TopOne will
+
                   start tracking its progress immediately.
                 </p>
               </div>

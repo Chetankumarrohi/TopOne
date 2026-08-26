@@ -415,7 +415,7 @@ export default function FundDetailPage() {
 
       } catch {
         setError(
-          "Could not connect to InvestiGenie backend."
+          "Could not connect to TopOne backend."
         );
       } finally {
         setLoading(false);
@@ -1059,7 +1059,7 @@ export default function FundDetailPage() {
           </div>
 
 
-          {/* InvestiGenie AI placeholder */}
+          {/* TopOne AI placeholder */}
 
           <div className="relative overflow-hidden rounded-[30px] border border-emerald-400/15 bg-gradient-to-b from-emerald-400/[0.07] to-emerald-400/[0.025] p-7">
 
@@ -1117,7 +1117,7 @@ export default function FundDetailPage() {
           <SectionHeading
             eyebrow="FUND DETAILS"
             title="About this investment"
-            description="Scheme information currently available in InvestiGenie."
+            description="Scheme information currently available in TopOne."
           />
 
 
@@ -1669,7 +1669,7 @@ function FundIntelligenceStrip({
               </p>
 
               <p className="mt-2 text-xs leading-5 text-white/25">
-                InvestiGenie will build this journey automatically
+                TopOne will build this journey automatically
                 as the Fund Form engine is recalculated over time.
               </p>
             </div>

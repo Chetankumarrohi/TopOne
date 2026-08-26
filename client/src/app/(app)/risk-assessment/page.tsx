@@ -155,8 +155,9 @@ export default function RiskAssessmentPage() {
         }
       } catch {
         setMessage(
-          "Could not connect to InvestiGenie."
+          "Could not connect to TopOne."
         );
+
       } finally {
         setLoading(false);
       }
@@ -369,10 +370,7 @@ export default function RiskAssessmentPage() {
             }
             className="text-xl font-semibold tracking-tight"
           >
-            Investi
-            <span className="text-emerald-400">
-              Genie
-            </span>
+            <span className="text-emerald-300">Top</span>One
           </button>
 
 
@@ -655,10 +653,7 @@ function RiskResultScreen({
 
           <div className="text-xl font-semibold tracking-tight">
 
-            Investi
-            <span className="text-emerald-400">
-              Genie
-            </span>
+            <span className="text-emerald-300">Top</span>One
 
           </div>
 
@@ -812,7 +807,8 @@ function RiskResultScreen({
 
           <h2 className="mt-3 text-2xl font-medium">
 
-            InvestiGenie now understands your
+            TopOne now understands your
+
             financial risk profile.
 
           </h2>

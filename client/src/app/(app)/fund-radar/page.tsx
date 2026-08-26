@@ -299,8 +299,9 @@ export default function FundRadarPage() {
       } catch {
         if (!cancelled) {
           setError(
-            "Could not connect to InvestiGenie."
+            "Could not connect to TopOne."
           );
+
         }
       } finally {
         if (!cancelled) {

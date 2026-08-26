@@ -88,8 +88,9 @@ export default function FinancialTwinPage() {
         setTwin(data);
       } catch {
         setError(
-          "Could not connect to InvestiGenie backend."
+          "Could not connect to TopOne backend."
         );
+
       } finally {
         setLoading(false);
       }
@@ -172,10 +173,7 @@ export default function FinancialTwinPage() {
             }
             className="text-xl font-semibold tracking-tight"
           >
-            Investi
-            <span className="text-emerald-400">
-              Genie
-            </span>
+            <span className="text-emerald-300">Top</span>One
           </button>
 
           <button
@@ -203,7 +201,8 @@ export default function FinancialTwinPage() {
             </h1>
 
             <p className="mt-4 max-w-2xl text-sm leading-6 text-white/45">
-              InvestiGenie combines your current finances,
+              TopOne combines your current finances,
+
               risk profile, Wealth DNA and goals into a
               forward-looking financial simulation.
             </p>

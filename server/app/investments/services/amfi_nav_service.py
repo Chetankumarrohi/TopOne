@@ -348,7 +348,7 @@ def sync_amfi_navs(
 ):
     """
     Fetch the current AMFI NAV feed and update
-    InvestiGenie's active AMFI-mapped products.
+    TopOne's active AMFI-mapped products.
     """
 
     content = (
